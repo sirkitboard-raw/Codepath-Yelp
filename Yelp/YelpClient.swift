@@ -52,14 +52,29 @@ class YelpClient: BDBOAuth1RequestOperationManager {
     }
     
     func searchWithTerm(term: String, completion: ([Business]!, NSError!) -> Void) -> AFHTTPRequestOperation {
-        return searchWithTerm(term, sort: nil, categories: nil, deals: nil, completion: completion)
+        return searchWithTerm(term, offset: 0, lat: nil, lon: nil, sort: nil, categories: nil, deals: nil, completion: completion)
     }
     
-    func searchWithTerm(term: String, sort: YelpSortMode?, categories: [String]?, deals: Bool?, completion: ([Business]!, NSError!) -> Void) -> AFHTTPRequestOperation {
+    func searchWithTerm(term: String, offset: Int, completion: ([Business]!, NSError!) -> Void) -> AFHTTPRequestOperation {
+        return searchWithTerm(term, offset: offset, lat: nil, lon: nil, sort: nil, categories: nil, deals: nil, completion: completion)
+    }
+    
+    func searchWithTerm(term: String, offset: Int, lat: Double?, lon: Double?, completion: ([Business]!, NSError!) -> Void) -> AFHTTPRequestOperation {
+        return searchWithTerm(term, offset: offset, lat: lat, lon: lon, sort: nil, categories: nil, deals: nil, completion: completion)
+    }
+    
+    func searchWithTerm(term: String, offset:Int?, lat: Double?, lon: Double?, sort: YelpSortMode?, categories: [String]?, deals: Bool?, completion: ([Business]!, NSError!) -> Void) -> AFHTTPRequestOperation {
         // For additional parameters, see http://www.yelp.com/developers/documentation/v2/search_api
-
+        var latitude = 37.785771
+        var longitude = -122.406165
         // Default the location to San Francisco
-        var parameters: [String : AnyObject] = ["term": term, "ll": "37.785771,-122.406165"]
+        if lat != nil {
+            latitude = lat!
+        }
+        if lon != nil {
+            longitude = lon!
+        }
+        var parameters: [String : AnyObject] = ["term": term, "ll": "\(latitude),\(longitude)"]
 
         if sort != nil {
             parameters["sort"] = sort!.rawValue
